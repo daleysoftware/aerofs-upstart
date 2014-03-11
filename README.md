@@ -1,10 +1,10 @@
 AeroFS Upstart
 ==============
 
-This this repository you will find an example upstart script for AeroFS. This upstart script has
-been tested on Ubuntu 13.10 server.
+In this repository you will find an example upstart script for AeroFS. This upstart script has been
+tested on Ubuntu 13.10 server.
 
-To use this script, copy it to /etc/init/ and perform the following action:
+To use this script, copy it to /etc/init/ and perform the following actions:
 
     sudo chown root:root /etc/init/aerofs.conf
     sudo service aerofs start
