@@ -9,6 +9,6 @@ To use this script, copy it to /etc/init/ and perform the following actions:
     sudo chown root:root /etc/init/aerofs.conf
     sudo service aerofs start
 
-You will also need to change user ID in the script (in this example the user is "mpillar").
+You will also need to change the user ID in the script (in this example the user is "mpillar").
 
 Enjoy!
