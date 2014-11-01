@@ -9,6 +9,8 @@ To use this script, copy it to /etc/init/ and perform the following actions:
     sudo chown root:root /etc/init/aerofs.conf
     sudo service aerofs start
 
-You will also need to change the user ID in the script (in this example the user is "mpillar").
+You will also need to change the user ID in the script (in this example the user is "aerofs").
 
-Enjoy!
+Contact: Matt Pillar <mpillar@uwaterloo.ca>
+
+N.B. these scripts are not officially endorsed by AeroFS at this time.
