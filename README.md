@@ -17,12 +17,8 @@ will be configured for you.
 
 This is the best way to install AeroFS on headless Ubuntu in most cases.
 
-A convenient one-line shell command to execute this script without downloading
-this repository:
-
-    bash <(curl -sL https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.sh)
-
-Or, an even shorter (but less secure) version:
+A convenient one-line shell command to execute this script without having to
+clone this repository:
 
     bash <(curl -sL http://ae.ro/1zW1mQG)
 
