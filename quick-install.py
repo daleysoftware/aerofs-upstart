@@ -1,8 +1,9 @@
-#!/bin/python
 import sys
+import os
 import signal
+import urllib2
 
-def signal_handler(signal, frame):
+def signal_handler(s, f):
     print
     print
     print ">> Received signal. Exiting."
@@ -34,12 +35,23 @@ def get_text(prompt):
 
 def construct_installer_url(config):
     if config["pc"]:
-        root = "https://" + config["pc-dns"]
+        root = "https://" + config["pc-dns"] + "/static/installers"
     else:
         root = "https://dsy5cjk52fz4a.cloudfront.net"
+    version = urllib2.urlopen(root + "/current.ver").read().split('=')[1].strip()
+    return root + "/aerofs%s-installer-%s.deb" % (("ts" if config["ts"] else ""), version)
 
-    # TODO version and deb.
-    return root
+def download_file_from(url):
+    f = urllib2.urlopen(url)
+    basename = os.path.basename(url)
+    print "URL: %s" % url
+    with open(os.path.basename(url), "wb") as local_file:
+        local_file.write(f.read())
+    return basename
+
+def install_deb(filename):
+    # TODO
+    pass
 
 def main():
     config = {}
@@ -64,8 +76,7 @@ def main():
 
     print
     print ">> Downloading the AeroFS installer..."
-    url = construct_installer_url(config)
-    print url
+    install_deb(download_file_from(construct_installer_url(config)))
 
     # TODO finish this.
 

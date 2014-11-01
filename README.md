@@ -21,7 +21,7 @@ this repository:
 
     bash <(curl -sL https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.sh)
 
-Or, an even shorter version:
+Or, an even shorter (less secure) version:
 
     bash <(curl -sL http://ae.ro/1zW1mQG)
 
