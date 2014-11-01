@@ -6,7 +6,7 @@ TEMP_FILE="/tmp/quick-install.py"
 trap "rm -f $TEMP_FILE; exit" SIGHUP SIGINT SIGTERM
 
 echo ">> Downloading setup scripts..."
-wget https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.py -O $TEMP_FILE
+curl -s https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.py > $TEMP_FILE
 
 echo ">> Launching setup utility..."
 echo

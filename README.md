@@ -19,11 +19,11 @@ This is the best way to install AeroFS on Ubuntu in most cases.
 A convenient one-line shell command to execute this script without downloading
 this repository:
 
-    bash <(curl -s https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.sh)
+    bash <(curl -sL https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.sh)
 
 Or, an even shorter version:
 
-    TODO
+    bash <(curl -sL http://ae.ro/1zW1mQG)
 
 Manual Install
 ---

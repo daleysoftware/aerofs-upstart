@@ -1,5 +1,14 @@
 #!/bin/python
 import sys
+import signal
+
+def signal_handler(signal, frame):
+    print
+    print
+    print ">> Received signal. Exiting."
+    sys.exit(1)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 def get_selection(allowed):
     allowed_map = {}
