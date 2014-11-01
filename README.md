@@ -10,18 +10,19 @@ Quick Install
 
 ** Quick Install path is still in development **
 
-Run the quick-install script and follow the prompts. This will download the
-AeroFS or AeroFS Team Server debian, install it, create an aerofs user and
-configure upstart.
+Run the quick-install script and follow the prompts for a guided install
+experience. The AeroFS or AeroFS Team Server debian will be downloaded
+autmatically and installed. An an aerofs user will be created and upstart
+will be configured for you.
 
-This is the best way to install AeroFS on Ubuntu in most cases.
+This is the best way to install AeroFS on headless Ubuntu in most cases.
 
 A convenient one-line shell command to execute this script without downloading
 this repository:
 
     bash <(curl -sL https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.sh)
 
-Or, an even shorter (less secure) version:
+Or, an even shorter (but less secure) version:
 
     bash <(curl -sL http://ae.ro/1zW1mQG)
 
