@@ -22,7 +22,7 @@ clone this repository:
 
     bash <(curl -sL https://bit.ly/10dm1z5)
 
-Note that this command must be run as root.
+Note that this command must be run as root. [Example](./quick-install-example.md).
 
 Manual Install
 ---
