@@ -1,7 +1,9 @@
 AeroFS Upstart
 ===
 
-In this repository you will find an example upstart script for AeroFS.
+In this repository you will find an example Ubuntu upstart script for AeroFS,
+and some tools that allow you to easily install and configure AeroFS on
+headless Ubuntu systems.
 
 N.B. these scripts are not officially endorsed by AeroFS at this time.
 
@@ -35,6 +37,8 @@ user is "aerofs").
 
 Dependencies
 ---
+
+Quick install requires the following:
 
 - Python 2.x
 - The following python modules: colorama
