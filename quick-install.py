@@ -19,7 +19,6 @@ def global_signal_handler(s, f):
     global exiting
 
     if cli_process is not None:
-        # FIXME this doesn't work.
         cli_process.send_signal(signal.SIGTERM)
         cli_process = None
     else:
@@ -95,10 +94,10 @@ def construct_installer_url(config):
 def download_file_from(config, url):
     response = urllib2.urlopen(url)
     basename = os.path.join("/tmp", config["host"] + "-" + os.path.basename(url))
-    with open(basename, "wb") as local_file:
-        chunk_read(response, local_file, report_hook=chunk_report)
     # Do no re-download if we already have the deb on our system.
     if os.path.isfile(basename): return basename
+    with open(basename, "wb") as local_file:
+        chunk_read(response, local_file, report_hook=chunk_report)
     return basename
 
 def install_deb(filename):
@@ -108,7 +107,11 @@ def launch_cli(config):
     global cli_process
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
     cli_process = subprocess.Popen(executable, shell=True)
-    signal.pause()
+    cli_process.wait()
+
+def cert_exists(config):
+    cert_filename = "~/.aerofsts/cert" if config["pc"] else "~/.aerofs/cert"
+    return os.path.isfile(cert_filename)
 
 # ------------------------------------------------------------
 # User Interaction Section
@@ -149,10 +152,15 @@ def main():
     print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
     print Fore.BLUE + "Press CTRL-C to stop the CLI when setup is finished." + Style.RESET_ALL
     launch_cli(config)
+    if not cert_exists(config):
+        print
+        print Fore.RED + "It looks like your setup failed. Aborting." + Style.RESET_ALL
+        sys.exit(2)
 
-    # TODO need to fix the signal handling and threading here.
+    print
+    print "--- TODO"
 
-    # TODO finish this.
+    # TODO finish this. Upstart, and aerofs user.
 
 # ------------------------------------------------------------
 # Entry Point
@@ -168,4 +176,4 @@ if __name__ == "__main__":
         print
         print Fore.RED + "Exception caught. Exiting." + Style.RESET_ALL
         traceback.print_exc(file=sys.stdout)
-        sys.exit(2)
+        sys.exit(3)
