@@ -7,11 +7,17 @@ import traceback
 
 from colorama import Fore, Style
 
+cli_process = None
 def global_signal_handler(s, f):
-    print
-    print
-    print Fore.RED + "Received signal. Exiting." + Style.RESET_ALL
-    sys.exit(1)
+    global cli_process
+    if cli_process is not None:
+        cli_process.send_signal(signal.SIGTERM)
+        cli_process = None
+    else:
+        print
+        print
+        print Fore.RED + "Received signal. Exiting." + Style.RESET_ALL
+        sys.exit(1)
 
 def init_global_signal_handler():
     signal.signal(signal.SIGINT, global_signal_handler)
@@ -59,24 +65,19 @@ def download_file_from(url):
         local_file.write(f.read())
     return basename
 
-def run_command(command_string, checked=True):
-    print "Run command: %s" % command_string
-    if checked:
-        subprocess.check_call(command_string.split(' '))
-    else:
-        subprocess.call(command_string.split(' '))
-
 def install_deb(filename):
-    run_command("sudo dpkg -i %s" % filename)
+    subprocess.check_call(("sudo dpkg -i %s" % filename).split(' '))
 
 def launch_cli(config):
+    global cli_process
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
-    run_command(executable, checked=False)
+    cli_process = subprocess.Popen(executable, shell=True)
+    signal.pause()
 
 def main():
     config = {}
     print Fore.GREEN + "AeroFS Quick Installation Utility" + Style.RESET_ALL
-    print "The easist, fastest way to install AeroFS on headless Linux systems."
+    print "The easist, fastest way to install AeroFS on headless Ubuntu systems."
 
     print
     print Fore.GREEN + "Which AeroFS Service would you like to install?" + Style.RESET_ALL
@@ -104,10 +105,10 @@ def main():
 
     print
     print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
-    print Fore.BLUE + "Press CTRL-C to stop the CLI when you are finished." + Style.RESET_ALL
+    print Fore.BLUE + "Press CTRL-C to stop the CLI when setup is finished." + Style.RESET_ALL
     launch_cli(config)
 
-    # TODO need to fix the signal handling here.
+    # TODO need to fix the signal handling and threading here.
 
     # TODO finish this.
 
@@ -115,7 +116,7 @@ if __name__ == "__main__":
     try:
         init_global_signal_handler()
         main()
-    except Exception as e:
+    except:
         print
         print Fore.RED + "Exception caught. Exiting." + Style.RESET_ALL
         traceback.print_exc(file=sys.stdout)
