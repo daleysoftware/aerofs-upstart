@@ -206,7 +206,8 @@ def main():
     print "Manage with: " + Fore.BLUE + "sudo service " + service_name + " <stop|start|restart|status>" + Style.RESET_ALL
 
     print
-    print Fore.GREEN + "Thanks for using AeroFS Quick Installation Utility!" + Style.RESET_ALL
+    print Fore.GREEN + "Installation complete!" + Style.RESET_ALL
+    print "Thanks for using AeroFS Quick Installation Utility!"
 
 # ------------------------------------------------------------
 # Entry Point

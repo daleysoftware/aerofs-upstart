@@ -10,8 +10,6 @@ N.B. these scripts are not officially endorsed by AeroFS at this time.
 Quick Install
 ---
 
-** Quick Install path is still in development **
-
 Run the quick-install script and follow the prompts for a guided install
 experience. The AeroFS or AeroFS Team Server debian will be downloaded
 autmatically and installed. An an aerofs user will be created and upstart
@@ -22,7 +20,9 @@ This is the best way to install AeroFS on headless Ubuntu in most cases.
 A convenient one-line shell command to execute this script without having to
 clone this repository:
 
-    sudo bash <(curl -sL https://bit.ly/10dm1z5)
+    bash <(curl -sL https://bit.ly/10dm1z5)
+
+Note that this command must be run as root.
 
 Manual Install
 ---
