@@ -51,7 +51,7 @@ def construct_installer_url(config):
 
 def download_file_from(url):
     f = urllib2.urlopen(url)
-    basename = os.path.basename(url)
+    basename = os.path.join("/tmp", os.path.basename(url))
     # Do no re-download if we already have the deb on our system.
     if os.path.isfile(basename):
         return basename
