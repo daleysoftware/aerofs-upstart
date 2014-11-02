@@ -25,7 +25,7 @@ def global_signal_handler(s, f):
         exiting = True
         print
         print
-        print Fore.RED + "Received signal. Exiting." + Style.RESET_ALL
+        print Fore.RED + "Received signal. Aborting." + Style.RESET_ALL
         sys.exit(1)
 
 def init_global_signal_handler():
@@ -103,11 +103,11 @@ def download_file_from(config, url):
 def install_deb(filename):
     subprocess.check_call(("sudo dpkg -i %s" % filename).split(' '))
 
-def launch_cli(config):
+def run_cli(config):
     global cli_process
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
     cli_process = subprocess.Popen(executable, shell=True)
-    cli_process.wait()
+    return cli_process.wait()
 
 def cert_exists(config):
     cert_filename = "~/.aerofsts/cert" if config["pc"] else "~/.aerofs/cert"
@@ -151,12 +151,18 @@ def main():
     print
     print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
     print Fore.BLUE + "Press CTRL-C to stop the CLI when setup is finished." + Style.RESET_ALL
-    launch_cli(config)
+    exit_code = run_cli(config)
+    if exit_code != -15:
+        print
+        print Fore.RED + "It looks like the CLI exited abnormally. Aborting." + Style.RESET_ALL
+        sys.exit(2)
     if not cert_exists(config):
         print
-        print Fore.RED + "It looks like your setup failed. Aborting." + Style.RESET_ALL
-        sys.exit(2)
+        print
+        print Fore.RED + "It looks like your setup never finished. Aborting." + Style.RESET_ALL
+        sys.exit(3)
 
+    print
     print
     print "--- TODO"
 
@@ -174,6 +180,6 @@ if __name__ == "__main__":
         raise e
     except:
         print
-        print Fore.RED + "Exception caught. Exiting." + Style.RESET_ALL
+        print Fore.RED + "Exception caught. Aborting." + Style.RESET_ALL
         traceback.print_exc(file=sys.stdout)
-        sys.exit(3)
+        sys.exit(4)
