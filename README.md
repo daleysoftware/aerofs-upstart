@@ -22,7 +22,7 @@ This is the best way to install AeroFS on headless Ubuntu in most cases.
 A convenient one-line shell command to execute this script without having to
 clone this repository:
 
-    bash <(curl -sL http://ae.ro/1zW1mQG)
+    sudo bash <(curl -sL https://bit.ly/10dm1z5)
 
 Manual Install
 ---
