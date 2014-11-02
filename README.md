@@ -32,3 +32,9 @@ Copy this script to /etc/init/ and perform the following actions:
 
 You will also need to change the user ID in the script (in this example the
 user is "aerofs").
+
+Dependencies
+---
+
+- Python 2.x
+- The following python modules: colorama

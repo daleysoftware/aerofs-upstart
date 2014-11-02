@@ -1,15 +1,20 @@
 import sys
+import subprocess
 import os
 import signal
 import urllib2
+import traceback
 
-def signal_handler(s, f):
+from colorama import Fore, Style
+
+def global_signal_handler(s, f):
     print
     print
-    print ">> Received signal. Exiting."
+    print Fore.RED + "Received signal. Exiting." + Style.RESET_ALL
     sys.exit(1)
 
-signal.signal(signal.SIGINT, signal_handler)
+def init_global_signal_handler():
+    signal.signal(signal.SIGINT, global_signal_handler)
 
 def get_selection(allowed):
     allowed_map = {}
@@ -39,49 +44,79 @@ def construct_installer_url(config):
     else:
         root = "https://dsy5cjk52fz4a.cloudfront.net"
     version = urllib2.urlopen(root + "/current.ver").read().split('=')[1].strip()
-    return root + "/aerofs%s-installer-%s.deb" % (("ts" if config["ts"] else ""), version)
+
+    url =  root + "/aerofs%s-installer-%s.deb" % (("ts" if config["ts"] else ""), version)
+    print "URL: %s" % url
+    return url
 
 def download_file_from(url):
     f = urllib2.urlopen(url)
     basename = os.path.basename(url)
-    print "URL: %s" % url
-    with open(os.path.basename(url), "wb") as local_file:
+    # Do no re-download if we already have the deb on our system.
+    if os.path.isfile(basename):
+        return basename
+    with open(basename, "wb") as local_file:
         local_file.write(f.read())
     return basename
 
+def run_command(command_string, checked=True):
+    print "Run command: %s" % command_string
+    if checked:
+        subprocess.check_call(command_string.split(' '))
+    else:
+        subprocess.call(command_string.split(' '))
+
 def install_deb(filename):
-    # TODO
-    pass
+    run_command("sudo dpkg -i %s" % filename)
+
+def launch_cli(config):
+    executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
+    run_command(executable, checked=False)
 
 def main():
     config = {}
-    print ">> AeroFS Quick Installation Utility"
+    print Fore.GREEN + "AeroFS Quick Installation Utility" + Style.RESET_ALL
+    print "The easist, fastest way to install AeroFS on headless Linux systems."
 
     print
-    print ">> Which AeroFS Service would you like to install?"
+    print Fore.GREEN + "Which AeroFS Service would you like to install?" + Style.RESET_ALL
     print "[0] AeroFS Team Server"
     print "[1] AeroFS"
     config["ts"] = True if get_selection([0, 1]) is 0 else False
 
     print
-    print ">> Are you using AeroFS Private Cloud or AeroFS Hybrid Cloud?"
+    print Fore.GREEN + "Are you using AeroFS Private Cloud or Hybrid Cloud?" + Style.RESET_ALL
     print "[0] Private"
     print "[1] Hybrid"
     config["pc"] = True if get_selection([0, 1]) is 0 else False
 
     if config["pc"]:
         print
-        print ">> Please enter the DNS name for your AeroFS Private Cloud Appliance."
+        print Fore.GREEN + "Please enter the DNS name of your Appliance." + Style.RESET_ALL
         config["pc-dns"] = get_text("PC Appliance DNS")
 
     print
-    print ">> Downloading the AeroFS installer..."
-    install_deb(download_file_from(construct_installer_url(config)))
+    print Fore.GREEN + "Downloading and installing AeroFS..." + Style.RESET_ALL
+    # TODO need progress meter here.
+    installer_filename = download_file_from(construct_installer_url(config))
+    install_deb(installer_filename)
+    #os.unlink(installer_filename)
+
+    print
+    print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
+    print Fore.BLUE + "Press CTRL-C to stop the CLI when you are finished." + Style.RESET_ALL
+    launch_cli(config)
+
+    # TODO need to fix the signal handling here.
 
     # TODO finish this.
 
-    print
-    print config
-
 if __name__ == "__main__":
-    main()
+    try:
+        init_global_signal_handler()
+        main()
+    except Exception as e:
+        print
+        print Fore.RED + "Exception caught. Exiting." + Style.RESET_ALL
+        traceback.print_exc(file=sys.stdout)
+        sys.exit(2)
