@@ -176,7 +176,7 @@ def main():
     installer_url = construct_installer_url(config)
     installer_filename = download_debian_from(config, installer_url)
     install_deb(installer_filename)
-    #os.unlink(installer_filename)
+    os.unlink(installer_filename)
 
     print
     print Fore.GREEN + "Creating aerofs user..." + Style.RESET_ALL
@@ -207,7 +207,7 @@ def main():
 
     print
     print Fore.GREEN + "Installation complete!" + Style.RESET_ALL
-    print "Thanks for using AeroFS Quick Installation Utility!"
+    print "Thanks for using the AeroFS Quick Installation Utility!"
 
 # ------------------------------------------------------------
 # Entry Point

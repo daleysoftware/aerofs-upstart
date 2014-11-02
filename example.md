@@ -69,4 +69,4 @@
     Manage with: sudo service aerofsts <stop|start|restart|status>
 
     Installation Complete!
-    Thanks for using AeroFS Quick Installation Utility!
+    Thanks for using the AeroFS Quick Installation Utility!
