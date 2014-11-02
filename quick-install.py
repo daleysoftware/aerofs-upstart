@@ -7,13 +7,23 @@ import traceback
 
 from colorama import Fore, Style
 
+# ------------------------------------------------------------
+# Signal Handling
+# ------------------------------------------------------------
+
 cli_process = None
+exiting = False
+
 def global_signal_handler(s, f):
     global cli_process
+    global exiting
+
     if cli_process is not None:
+        # FIXME this doesn't work.
         cli_process.send_signal(signal.SIGTERM)
         cli_process = None
     else:
+        exiting = True
         print
         print
         print Fore.RED + "Received signal. Exiting." + Style.RESET_ALL
@@ -21,6 +31,10 @@ def global_signal_handler(s, f):
 
 def init_global_signal_handler():
     signal.signal(signal.SIGINT, global_signal_handler)
+
+# ------------------------------------------------------------
+# User I/O utilities
+# ------------------------------------------------------------
 
 def get_selection(allowed):
     allowed_map = {}
@@ -44,25 +58,47 @@ def get_text(prompt):
         if confirm == "Y":
             return text
 
-def construct_installer_url(config):
-    if config["pc"]:
-        root = "https://" + config["pc-dns"] + "/static/installers"
-    else:
-        root = "https://dsy5cjk52fz4a.cloudfront.net"
-    version = urllib2.urlopen(root + "/current.ver").read().split('=')[1].strip()
+# ------------------------------------------------------------
+# Network
+# ------------------------------------------------------------
 
+def chunk_report(bytes_so_far, chunk_size, total_size):
+   percent = float(bytes_so_far) / total_size
+   percent = round(percent*100, 2)
+   sys.stdout.write("Downloaded %d of %d bytes (%0.2f%%)\r" % (bytes_so_far, total_size, percent))
+   if bytes_so_far >= total_size: sys.stdout.write('\n')
+
+def chunk_read(response, local_file, chunk_size=8192, report_hook=None):
+   total_size = response.info().getheader('Content-Length').strip()
+   total_size = int(total_size)
+   bytes_so_far = 0
+   while True:
+      chunk = response.read(chunk_size)
+      local_file.write(chunk)
+      bytes_so_far += len(chunk)
+      if not chunk: break
+      if report_hook: report_hook(bytes_so_far, chunk_size, total_size)
+   return bytes_so_far
+
+# ------------------------------------------------------------
+# Infrastructure Related Utils
+# ------------------------------------------------------------
+
+def construct_installer_url(config):
+    root_pc = "https://" + config["host"] + "/static/installers"
+    root_hc = "https://dsy5cjk52fz4a.cloudfront.net"
+    root = root_pc if config["pc"] else root_hc
+    version = urllib2.urlopen(root + "/current.ver").read().split('=')[1].strip()
     url =  root + "/aerofs%s-installer-%s.deb" % (("ts" if config["ts"] else ""), version)
-    print "URL: %s" % url
     return url
 
-def download_file_from(url):
-    f = urllib2.urlopen(url)
-    basename = os.path.join("/tmp", os.path.basename(url))
-    # Do no re-download if we already have the deb on our system.
-    if os.path.isfile(basename):
-        return basename
+def download_file_from(config, url):
+    response = urllib2.urlopen(url)
+    basename = os.path.join("/tmp", config["host"] + "-" + os.path.basename(url))
     with open(basename, "wb") as local_file:
-        local_file.write(f.read())
+        chunk_read(response, local_file, report_hook=chunk_report)
+    # Do no re-download if we already have the deb on our system.
+    if os.path.isfile(basename): return basename
     return basename
 
 def install_deb(filename):
@@ -73,6 +109,10 @@ def launch_cli(config):
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
     cli_process = subprocess.Popen(executable, shell=True)
     signal.pause()
+
+# ------------------------------------------------------------
+# User Interaction Section
+# ------------------------------------------------------------
 
 def main():
     config = {}
@@ -93,13 +133,15 @@ def main():
 
     if config["pc"]:
         print
-        print Fore.GREEN + "Please enter the DNS name of your Appliance." + Style.RESET_ALL
-        config["pc-dns"] = get_text("PC Appliance DNS")
+        print Fore.GREEN + "Please enter the DNS hostname of your Appliance." + Style.RESET_ALL
+        config["host"] = get_text("PC Appliance DNS Host")
+    else:
+        config["host"] = "aerofs.com"
 
     print
     print Fore.GREEN + "Downloading and installing AeroFS..." + Style.RESET_ALL
-    # TODO need progress meter here.
-    installer_filename = download_file_from(construct_installer_url(config))
+    installer_url = construct_installer_url(config)
+    installer_filename = download_file_from(config, installer_url)
     install_deb(installer_filename)
     #os.unlink(installer_filename)
 
@@ -112,10 +154,16 @@ def main():
 
     # TODO finish this.
 
+# ------------------------------------------------------------
+# Entry Point
+# ------------------------------------------------------------
+
 if __name__ == "__main__":
     try:
         init_global_signal_handler()
         main()
+    except SystemExit as e:
+        raise e
     except:
         print
         print Fore.RED + "Exception caught. Exiting." + Style.RESET_ALL
