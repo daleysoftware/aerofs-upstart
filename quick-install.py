@@ -103,7 +103,7 @@ def run_cli(config):
     global cli_process
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
     cli_process = subprocess.Popen("su aerofs -c %s" % executable, shell=True)
-    while True:
+    while cli_process.poll() is not None:
         time.sleep(0.5)
         if cert_exists(config):
             cli_process.terminate()
