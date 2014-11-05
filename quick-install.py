@@ -149,7 +149,7 @@ def main():
     print
     print Fore.GREEN + "Which AeroFS Service would you like to install?" + Style.RESET_ALL
     print "[0] AeroFS Team Server"
-    print "[1] AeroFS"
+    print "[1] AeroFS Desktop Client"
     config["ts"] = True if get_selection([0, 1]) is 0 else False
 
     print
