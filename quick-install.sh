@@ -3,6 +3,6 @@
 set -eu
 TEMP_FILE="/tmp/quick-install.py"
 trap "rm -f $TEMP_FILE; exit" SIGHUP SIGINT SIGTERM
-curl -sL https://bit.ly/1EbB3EN > $TEMP_FILE
+curl -sL https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/quick-install.py > $TEMP_FILE
 python $TEMP_FILE
 rm -f $TEMP_FILE
