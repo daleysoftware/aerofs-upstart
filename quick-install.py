@@ -63,7 +63,7 @@ def chunk_report(bytes_so_far, chunk_size, total_size):
    sys.stdout.write("Downloaded %d of %d bytes (%0.2f%%)\r" % (bytes_so_far, total_size, percent))
    if bytes_so_far >= total_size: sys.stdout.write('\n')
 
-def chunk_read(response, local_file, chunk_size=8192, report_hook=None):
+def chunk_read(response, local_file, chunk_size=32728, report_hook=None):
    total_size = response.info().getheader('Content-Length').strip()
    total_size = int(total_size)
    bytes_so_far = 0
@@ -102,13 +102,18 @@ def install_deb(filename):
 def run_cli(config):
     global cli_process
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
-    cli_process = subprocess.Popen("su aerofs -c %s" % executable, shell=True)
+    with open(os.devnull, "w") as f:
+        cli_process = subprocess.Popen("su aerofs -c %s" % executable, shell=True, stdout=f, stderr=f)
     time.sleep(2.0)
     while cli_process.poll() is None:
         time.sleep(0.5)
         if cert_exists(config):
-            cli_process.terminate()
-            break
+            # Give the system some time to get up and running, so we don't get any lingering
+            # messages on the next startup.
+            time.sleep(5.0)
+            with open(os.devnull, "w") as f:
+                subprocess.call("pkill -u aerofs".split(' '), stdout=f, stderr=f)
+                break
 
 def cert_exists(config):
     cert_ts = '/home/aerofs/.aerofsts/cert'
@@ -196,6 +201,7 @@ def main():
     print
     print Fore.GREEN + "Installation complete!" + Style.RESET_ALL
     print "Thanks for using the AeroFS Quick Installation Utility!"
+    print
 
 # ------------------------------------------------------------
 # Entry Point
