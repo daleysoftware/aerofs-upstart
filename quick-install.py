@@ -4,6 +4,7 @@ import os
 import signal
 import urllib2
 import traceback
+import time
 
 from colorama import Fore, Style
 
@@ -14,20 +15,9 @@ CONF_URL_TS="https://raw.githubusercontent.com/mpillar/aerofs-upstart/master/aer
 # Signal Handling
 # ------------------------------------------------------------
 
-cli_process = None
-exiting = False
-
 def global_signal_handler(s, f):
-    global cli_process
-    global exiting
-
-    if cli_process is not None:
-        cli_process.send_signal(signal.SIGTERM)
-        cli_process = None
-    else:
-        exiting = True
-        print
-        bail("Received signal")
+    print
+    bail("Received signal")
 
 def init_global_signal_handler():
     signal.signal(signal.SIGINT, global_signal_handler)
@@ -113,12 +103,16 @@ def run_cli(config):
     global cli_process
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
     cli_process = subprocess.Popen("su aerofs -c %s" % executable, shell=True)
-    return cli_process.wait()
+    while True:
+        time.sleep(0.5)
+        if cert_exists(config):
+            cli_process.terminate()
+            break
 
 def cert_exists(config):
     cert_ts = '/home/aerofs/.aerofsts/cert'
     cert_no_ts = '/home/aerofs/.aerofs/cert'
-    cert_filename = cert_ts if config["pc"] else cert_no_ts
+    cert_filename = cert_ts if config["ts"] else cert_no_ts
     return os.path.isfile(cert_filename)
 
 def create_aerofs_user_if_needed():
@@ -184,17 +178,8 @@ def main():
 
     print
     print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
-    print Fore.BLUE + "Press CTRL-C to stop the CLI when setup is finished." + Style.RESET_ALL
-    exit_code = run_cli(config)
-    if exit_code != -15:
-        bail("It looks like the CLI exited abnormally")
-    if not cert_exists(config):
-        # CTRL-C'd; need extra newline.
-        print
-        bail("It looks like your setup never finished")
+    run_cli(config)
 
-    # CTRL-C'd; need extra newline.
-    print
     print
     print Fore.GREEN + "Downloading and installing upstart script..." + Style.RESET_ALL
     download_and_install_upstart(config)
