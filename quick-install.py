@@ -180,6 +180,8 @@ def main():
     print
     print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
     run_cli(config)
+    if not cert_exists(config):
+        bail("It looks like your setup never finished")
 
     print
     print Fore.GREEN + "Downloading and installing upstart script..." + Style.RESET_ALL
