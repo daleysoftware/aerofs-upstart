@@ -102,8 +102,7 @@ def install_deb(filename):
 def run_cli(config):
     global cli_process
     executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
-    with open(os.devnull, "w") as f:
-        cli_process = subprocess.Popen("su aerofs -c %s" % executable, shell=True, stdout=f, stderr=f)
+    cli_process = subprocess.Popen("su aerofs -c %s" % executable, shell=True)
     time.sleep(2.0)
     while cli_process.poll() is None:
         time.sleep(0.5)
@@ -176,7 +175,7 @@ def main():
     installer_url = construct_installer_url(config)
     installer_filename = download_debian_from(config, installer_url)
     install_deb(installer_filename)
-    os.unlink(installer_filename)
+    #os.unlink(installer_filename)
 
     print
     print Fore.GREEN + "Creating aerofs user..." + Style.RESET_ALL
