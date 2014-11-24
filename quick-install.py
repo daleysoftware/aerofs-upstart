@@ -113,19 +113,23 @@ def run_cli(config):
     time.sleep(2.0)
     while cli_process.poll() is None:
         time.sleep(0.5)
-        if cert_exists(config):
-            # Give the system some time to get up and running, so we don't get any lingering
-            # messages on the next startup.
-            time.sleep(5.0)
+        # When the "setting up" flag is deleted, we can proceed.
+        if cert_exists(config) and not su_exists(config):
             with open(os.devnull, "w") as f:
                 subprocess.call("pkill -u aerofs".split(' '), stdout=f, stderr=f)
                 break
 
+def aerofs_internal_exists(config, filename):
+    ts = '/home/aerofs/.aerofsts/' + filename
+    no_ts = '/home/aerofs/.aerofs/' + filename
+    fully_qualified_filename = ts if config["ts"] else ts
+    return os.path.isfile(fully_qualified_filename)
+
+def su_exists(config):
+    return aerofs_internal_exists(config, 'su')
+
 def cert_exists(config):
-    cert_ts = '/home/aerofs/.aerofsts/cert'
-    cert_no_ts = '/home/aerofs/.aerofs/cert'
-    cert_filename = cert_ts if config["ts"] else cert_no_ts
-    return os.path.isfile(cert_filename)
+    return aerofs_internal_exists(config, 'cert')
 
 def create_aerofs_user_if_needed():
     null = open(os.devnull, 'w')
@@ -188,7 +192,7 @@ def main():
     print
     print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
     run_cli(config)
-    if not cert_exists(config):
+    if su_exists(config) or not cert_exists(config):
         bail("It looks like your setup never finished")
 
     print
