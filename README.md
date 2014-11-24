@@ -10,7 +10,7 @@ Quick Install
 ---
 
 Run the quick-install script and follow the prompts for a guided install
-experience. The AeroFS or AeroFS Team Server debian will be downloaded
+experience. The AeroFS or AeroFS Team Server installer will be downloaded
 autmatically and installed. An an aerofs user will be created and upstart
 will be configured for you.
 
@@ -31,8 +31,8 @@ Copy this script to /etc/init/ and perform the following actions:
     sudo chown root:root /etc/init/aerofs[ts].conf
     sudo service aerofs[ts] start
 
-You will also need to change the user ID in the script (in this example the
-user is "aerofs").
+You will also need to change the user ID in the script as needed (in this
+example the user is "aerofs").
 
 Dependencies
 ---
