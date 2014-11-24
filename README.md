@@ -1,9 +1,8 @@
 AeroFS Upstart
 ===
 
-In this repository you will find an example Ubuntu upstart script for AeroFS,
-and some tools that allow you to easily install and configure AeroFS on
-headless Ubuntu systems.
+In this repository you will find an example upstart script for AeroFS, and some
+tools that allow you to easily install and configure AeroFS on headless systems.
 
 N.B. these scripts are not officially endorsed by AeroFS at this time.
 
@@ -15,7 +14,7 @@ experience. The AeroFS or AeroFS Team Server debian will be downloaded
 autmatically and installed. An an aerofs user will be created and upstart
 will be configured for you.
 
-This is the best way to install AeroFS on headless Ubuntu in most cases.
+This is the best way to install AeroFS on headless systems in most cases.
 
 A convenient one-line shell command to execute this script without having to
 clone this repository:

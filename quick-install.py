@@ -1,4 +1,5 @@
 import sys
+import shutil
 import subprocess
 import os
 import signal
@@ -84,24 +85,29 @@ def construct_installer_url(config):
     root_hc = "https://dsy5cjk52fz4a.cloudfront.net"
     root = root_pc if config["pc"] else root_hc
     version = urllib2.urlopen(root + "/current.ver").read().split('=')[1].strip()
-    url =  root + "/aerofs%s-installer-%s.deb" % (("ts" if config["ts"] else ""), version)
+    url =  root + "/aerofs%s-installer-%s.tgz" % (("ts" if config["ts"] else ""), version)
     return url
 
-def download_debian_from(config, url):
+def download_installer_from(config, url):
     response = urllib2.urlopen(url)
     basename = os.path.join("/tmp", config["host"] + "-" + os.path.basename(url))
-    # Do no re-download if we already have the deb on our system.
+    # Do no re-download if we already have the installer on our system.
     if os.path.isfile(basename): return basename
     with open(basename, "wb") as local_file:
         chunk_read(response, local_file, report_hook=chunk_report)
     return basename
 
-def install_deb(filename):
-    subprocess.check_call(("dpkg -i %s" % filename).split(' '))
+def get_service_name(config):
+    return "aerofsts" if config["ts"] else "aerofs"
+
+def install_aerofs_tar(filename):
+    os.chdir('/tmp')
+    subprocess.check_call(("tar xf %s" % filename).split(' '))
+    shutil.move('/tmp/aerofs', '/opt/aerofs')
 
 def run_cli(config):
     global cli_process
-    executable = "aerofsts-cli" if config["ts"] else "aerofs-cli"
+    executable = "/opt/aerofs/aerofsts-cli" if config["ts"] else "/opt/aerofs/aerofs-cli"
     cli_process = subprocess.Popen("su aerofs -c %s" % executable, shell=True)
     time.sleep(2.0)
     while cli_process.poll() is None:
@@ -124,9 +130,6 @@ def create_aerofs_user_if_needed():
     null = open(os.devnull, 'w')
     if subprocess.call("id -u aerofs".split(' '), stdout=null, stderr=subprocess.STDOUT) != 0:
         subprocess.check_call("useradd -m -d /home/aerofs -s /bin/bash aerofs".split(' '))
-
-def get_service_name(config):
-    return "aerofsts" if config["ts"] else "aerofs"
 
 def download_and_install_upstart(config):
     conf_url = CONF_URL_TS if config["ts"] else CONF_URL_NORMAL
@@ -173,8 +176,8 @@ def main():
     print
     print Fore.GREEN + "Downloading and installing AeroFS..." + Style.RESET_ALL
     installer_url = construct_installer_url(config)
-    installer_filename = download_debian_from(config, installer_url)
-    install_deb(installer_filename)
+    installer_filename = download_installer_from(config, installer_url)
+    install_aerofs_tar(installer_filename)
     #os.unlink(installer_filename)
 
     print
