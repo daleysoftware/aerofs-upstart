@@ -103,6 +103,7 @@ def get_service_name(config):
 def install_aerofs_tar(filename):
     os.chdir('/tmp')
     subprocess.check_call(("tar xf %s" % filename).split(' '))
+    shutil.rmtree('/opt/aeorfs')
     shutil.move('/tmp/aerofs', '/opt/aerofs')
 
 def run_cli(config):
