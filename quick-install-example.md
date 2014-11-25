@@ -4,7 +4,7 @@
 
     Which AeroFS Service would you like to install?
     [0] AeroFS Team Server
-    [1] AeroFS
+    [1] AeroFS Desktop Client
     Enter a number [0, 1]: 0
     Selection 0 okay? [Y/n] Y
 
@@ -15,16 +15,11 @@
     Selection 0 okay? [Y/n] Y
 
     Please enter the DNS hostname of your Appliance.
-    PC Appliance DNS Host: share.syncfs.com
+    PC Appliance DNS Host: share.syncfs.com 
     PC Appliance DNS Host "share.syncfs.com" okay? [Y/n] Y
 
     Downloading and installing AeroFS...
-    Downloaded 67056318 of 67056318 bytes (100.00%)
-    Selecting previously unselected package aerofsts-installer-0.
-    (Reading database ... 51349 files and directories currently installed.)
-    Unpacking aerofsts-installer-0 (from .../share.syncfs.com-aerofsts-installer-0.141101.11242.deb) ...
-    Setting up aerofsts-installer-0 (0.141101.11242) ...
-    procps stop/waiting
+    Downloaded 68761784 of 68761784 bytes (100.00%)
 
     Creating aerofs user...
 
@@ -42,13 +37,15 @@
      2. Store files on Amazon S3 or OpenStack Swift
     Storage option [0]: 0
     Data Storage folder [/home/aerofs/AeroFS Team Server Storage]: 
-    Enable mobile and Web access? See https://support.aerofs.com/entries/29044194 for more information.
+    Enable mobile and web access? See https://support.aerofs.com/entries/29044194 for more information.
     [Y]es / [N]o: Y
     API access is enabled.
     Signing in...
     Registering new device...
     You can now access AeroFS Team Server functions through the "aerofsts-sh" command while aerofsts-cli is running.
     Up and running. Enjoy!
+
+    Session terminated, terminating shell... ...terminated.
 
     Downloading and installing upstart script...
     update-rc.d: warning: /etc/init.d/aerofsts missing LSB information
@@ -63,8 +60,8 @@
        /etc/rc5.d/S20aerofsts -> ../init.d/aerofsts
 
     Starting AeroFS Service...
-    aerofsts start/running, process 2109
+    aerofsts start/running, process 2244
     Manage with: sudo service aerofsts <stop|start|restart|status>
 
-    Installation Complete!
+    Installation complete!
     Thanks for using the AeroFS Quick Installation Utility!
