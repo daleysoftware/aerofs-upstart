@@ -122,7 +122,7 @@ def run_cli(config):
 def aerofs_internal_exists(config, filename):
     ts = '/home/aerofs/.aerofsts/' + filename
     no_ts = '/home/aerofs/.aerofs/' + filename
-    fully_qualified_filename = ts if config["ts"] else ts
+    fully_qualified_filename = ts if config["ts"] else no_ts
     return os.path.isfile(fully_qualified_filename)
 
 def su_exists(config):
