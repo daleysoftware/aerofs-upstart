@@ -1,8 +1,6 @@
 AeroFS Upstart
 ===
 
-*Not officially endorsed by AeroFS at this time.*
-
 In this repository you will find an example upstart script for AeroFS, and some
 tools that allow you to easily install and configure AeroFS on headless systems.
 
