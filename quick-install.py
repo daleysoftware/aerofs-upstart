@@ -81,9 +81,7 @@ def chunk_read(response, local_file, chunk_size=32728, report_hook=None):
 # ------------------------------------------------------------
 
 def construct_installer_url(config):
-    root_pc = "https://" + config["host"] + "/static/installers"
-    root_hc = "https://dsy5cjk52fz4a.cloudfront.net"
-    root = root_pc if config["pc"] else root_hc
+    root = "https://" + config["host"] + "/static/installers"
     version = urllib2.urlopen(root + "/current.ver").read().split('=')[1].strip()
     url =  root + "/aerofs%s-installer-%s.tgz" % (("ts" if config["ts"] else ""), version)
     return url
@@ -166,24 +164,14 @@ def main():
     config["ts"] = True if get_selection([0, 1]) is 0 else False
 
     print
-    print Fore.GREEN + "Are you using AeroFS Private Cloud or Hybrid Cloud?" + Style.RESET_ALL
-    print "[0] Private"
-    print "[1] Hybrid"
-    config["pc"] = True if get_selection([0, 1]) is 0 else False
-
-    if config["pc"]:
-        print
-        print Fore.GREEN + "Please enter the DNS hostname of your Appliance." + Style.RESET_ALL
-        config["host"] = get_text("PC Appliance DNS Host")
-    else:
-        config["host"] = "aerofs.com"
+    print Fore.GREEN + "Please enter the DNS hostname of your Appliance." + Style.RESET_ALL
+    config["host"] = get_text("PC Appliance DNS Host")
 
     print
     print Fore.GREEN + "Downloading and installing AeroFS..." + Style.RESET_ALL
     installer_url = construct_installer_url(config)
     installer_filename = download_installer_from(config, installer_url)
     install_aerofs_tar(installer_filename)
-    #os.unlink(installer_filename)
 
     print
     print Fore.GREEN + "Creating aerofs user..." + Style.RESET_ALL
