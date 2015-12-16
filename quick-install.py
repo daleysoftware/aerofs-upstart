@@ -146,6 +146,13 @@ def download_and_install_upstart(config):
 def start_aerofs_service(config):
     subprocess.check_call(("service %s start" % get_service_name(config)).split(' '))
 
+def check_if_service_exist(config):
+    service_name = get_service_name(config)
+    return True if subprocess.call(("service %s status" % service_name).split(' ')) == 0 else False
+
+def restart_the_service(config):
+    subprocess.call(("sudo service %s restart" % get_service_name(config)).split(' '))
+
 # ------------------------------------------------------------
 # User Interaction Section
 # ------------------------------------------------------------
@@ -177,19 +184,27 @@ def main():
     print Fore.GREEN + "Creating aerofs user..." + Style.RESET_ALL
     create_aerofs_user_if_needed()
 
-    print
-    print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
-    run_cli(config)
-    if su_exists(config) or not cert_exists(config):
-        bail("It looks like your setup never finished")
+    service_exist = check_if_service_exist(config)
 
-    print
-    print Fore.GREEN + "Downloading and installing upstart script..." + Style.RESET_ALL
-    download_and_install_upstart(config)
+    if not service_exist:
+        print
+        print Fore.GREEN + "Running AeroFS installation program..." + Style.RESET_ALL
+        run_cli(config)
+        if su_exists(config) or not cert_exists(config):
+            bail("It looks like your setup never finished")
 
-    print
-    print Fore.GREEN + "Starting AeroFS Service..." + Style.RESET_ALL
-    start_aerofs_service(config)
+        print
+        print Fore.GREEN + "Downloading and installing upstart script..." + Style.RESET_ALL
+        download_and_install_upstart(config)
+
+        print
+        print Fore.GREEN + "Starting AeroFS Service..." + Style.RESET_ALL
+        start_aerofs_service(config)
+    else:
+        print
+        print Fore.GREEN + "Client installed and updated. Restarting service..." + Style.RESET_ALL
+        restart_the_service(config)
+
     service_name = get_service_name(config)
     print "Manage with: " + Fore.BLUE + "sudo service " + service_name + " <stop|start|restart|status>" + Style.RESET_ALL
 
